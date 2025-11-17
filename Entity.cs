@@ -3,21 +3,29 @@ using System.Numerics;
 
 namespace falling_circles;
 
+struct innerColor {
+	int r, g, b, a;
+}
+
 public class Entity {
 	public int Radius { get; set;}
 	public int X { get; set;}
 	public int Y { get; set;}
+	public int Speed { get; set; }
 	public bool Active { get; set; }
 	public Color InitColor { get; set;}
 	public Color CurColor { get; set;}
 
 	public Vector2 Position { get; set; }
+	private innerColor innColor { get; set; }
+
 
 	public Entity() {}
-	public Entity(int con_x,int con_y, int rad, bool act, Color init, Color cur) {
+	public Entity(int con_x,int con_y, int rad, int spd, bool act, Color init, Color cur) {
 		X = con_x;
 		Y = con_y;
 		Radius = rad;
+		Speed = spd;
 		Active = act;
 		InitColor = init;
 		CurColor = cur;
@@ -33,7 +41,14 @@ public class Entity {
 	}
 
 	public void fall() {
-		this.Y += 1;
+		this.Y += Speed;
+	}
+
+	public void track_point(Player play) {
+		if(this.CurColor.A <= 0) {
+			this.Active = false;
+			play.score += 1;
+		}
 	}
 };
 
@@ -47,6 +62,7 @@ public class Player : Entity {
 		this.Y = ent.Y;
 		this.Radius = ent.Radius;
 		this.Active = ent.Active;
+		this.Speed = ent.Speed;
 		this.InitColor = ent.InitColor;
 		this.CurColor = ent.CurColor;
 		this.Position = new Vector2(X,Y);
@@ -67,6 +83,12 @@ public class Player : Entity {
 				ent[i].CurColor = ent[i].InitColor;
 			}
 		}
+
+		if(Raylib.IsMouseButtonPressed(MouseButton.Right)) {
+			this.SpecialCounter--;
+			if(this.SpecialCounter < 0)
+				this.SpecialCounter = 0;
+		}
 	}
 
 	public override void updatePosition() {
@@ -76,8 +98,6 @@ public class Player : Entity {
 	}
 
 	public override void draw() {
-		Raylib.DrawText($"{score}", 0, 0, 32, Color.Black);
-		Raylib.DrawText($"{SpecialCounter}", 0, 32, 32, Color.Black);
 		Raylib.DrawCircle((int)this.X, (int)this.Y, this.Radius, this.CurColor);
 	}
 	

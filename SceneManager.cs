@@ -111,13 +111,13 @@ public class ScreenManager {
 	int framesDivisor { get; set; }
 	Player player { get; set; }
 	Entity[] entity { get; set; }
-	Logo mainMenu {get; set; }
+	Logo[] logoArray {get; set; }
 	Button[] mainMenuButtons {get; set;}
 
 	public ScreenManager(GameScreen scree,
 	int eCounter, int fCounter,
 	int fDividend, int fDivisor,
-	Player play, Entity[] ent, Logo menu, Button[] buttArr) {
+	Player play, Entity[] ent, Logo[] logos, Button[] buttArr) {
 		Screen = scree;
 		enemyCounter = eCounter;
 		framesCounter = fCounter;
@@ -125,12 +125,12 @@ public class ScreenManager {
 		framesDivisor = fDivisor;
 		player = play;
 		entity = ent;
-		mainMenu = menu;
+		logoArray = logos;
 		mainMenuButtons = buttArr;
 	}
 
 	public void setLogos(Logo main) {
-		mainMenu = main;
+		logoArray[0] = main;
 	}
 
 	public void updateScreen() {
@@ -151,10 +151,16 @@ public class ScreenManager {
 						entity[i].updatePosition();
 				}
 
-				mainMenu.floaty();
-				if(Raylib.IsMouseButtonDown(MouseButton.Left))
+				logoArray[0].floaty();
+				if(Raylib.IsMouseButtonDown(MouseButton.Left)) {
+					var rand = new Random();
+					for(int i = 0; i < entity.Length; i++) {
+						entity[i] = new Entity(rand.Next(0, 480), 0, 32, rand.Next(1, 5), false, Color.Green, Color.Red); 
+					}
+					this.framesDividend = 60;
+					this.framesDividend = 15;
 					this.Screen = GameScreen.Main;
-
+				}
 			break;
 			case GameScreen.Main:
 				player.updatePosition();
@@ -164,7 +170,7 @@ public class ScreenManager {
 						this.Screen = GameScreen.Game;
 						var rand = new Random();
 						for(int i = 0; i < entity.Length; i++) {
-							entity[i] = new Entity(rand.Next(0, 480), 0, 32, false, Color.Green, Color.Red); 
+							entity[i] = new Entity(rand.Next(0, 480), 0, 32, rand.Next(1, 3), false, Color.Green, Color.Red); 
 						}
 }				}
 
@@ -228,7 +234,7 @@ public class ScreenManager {
 				// Raylib.DrawTexture(logo, 128, 128, Color.White);
 				Raylib.DrawText("Press Any Key to Continue", 640 / 2, 480 / 2, 16, Color.Black);
 				player.draw();
-				mainMenu.draw();
+				logoArray[0].draw();
 			break;
 			case GameScreen.Main:
 				Raylib.ClearBackground(Color.Purple);
@@ -245,6 +251,25 @@ public class ScreenManager {
 			break;
 			case GameScreen.Game:
 				Raylib.ClearBackground(Color.White);
+				Raylib.DrawText($"{player.score}", 0, 0, 32, Color.Black);
+				Raylib.DrawText($"{player.SpecialCounter}", 0, 32, 32, Color.Black);
+
+				switch(player.SpecialCounter) {
+					case 0:
+					break;
+					case 1:
+					logoArray[1].draw();
+					break;
+					case 2:
+					logoArray[1].draw();
+					logoArray[2].draw();
+					break;
+					case 3:
+					logoArray[1].draw();
+					logoArray[2].draw();
+					logoArray[3].draw();
+					break;
+				}
 
 				for(int i = 0; i < entity.Length; i++) {
 					if(entity[i].Active == true)
