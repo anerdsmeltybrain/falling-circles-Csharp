@@ -70,7 +70,7 @@ internal static class Program {
 		ScreenManager screen = new ScreenManager(mainScreen, enemyCounter,
 												framesCounter, framesDividend,
 												framesDivisor, player, entity,
-												logoArray, buttonArray);
+												logoArray, buttonArray, colors);
 
 		Raylib.SetTargetFPS(60);
 

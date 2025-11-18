@@ -111,13 +111,14 @@ public class ScreenManager {
 	int framesDivisor { get; set; }
 	Player player { get; set; }
 	Entity[] entity { get; set; }
-	Logo[] logoArray {get; set; }
-	Button[] mainMenuButtons {get; set;}
+	Logo[] logoArray { get; set; }
+	Button[] mainMenuButtons { get; set; }
+	Color[] colors { get; set; }
 
 	public ScreenManager(GameScreen scree,
 	int eCounter, int fCounter,
 	int fDividend, int fDivisor,
-	Player play, Entity[] ent, Logo[] logos, Button[] buttArr) {
+	Player play, Entity[] ent, Logo[] logos, Button[] buttArr, Color[] color) {
 		Screen = scree;
 		enemyCounter = eCounter;
 		framesCounter = fCounter;
@@ -127,7 +128,8 @@ public class ScreenManager {
 		entity = ent;
 		logoArray = logos;
 		mainMenuButtons = buttArr;
-	}
+		colors = color;
+		}
 
 	public void setLogos(Logo main) {
 		logoArray[0] = main;
@@ -274,6 +276,9 @@ public class ScreenManager {
 				for(int i = 0; i < entity.Length; i++) {
 					if(entity[i].Active == true)
 						entity[i].draw();
+					else {
+						continue;
+					}
 				}
 
 				player.draw();

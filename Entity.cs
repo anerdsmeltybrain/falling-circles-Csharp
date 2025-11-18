@@ -14,6 +14,10 @@ public class innerColor {
 	}
 
 	public void reduceAlpha(int attack) {
+		int aHolder = a;
+		int remain = aHolder - attack;
+		if (((attack - a) < 0) == true )
+			a -= remain;
 		a -= attack;
 	}
 }
