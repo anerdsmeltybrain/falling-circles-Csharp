@@ -3,25 +3,6 @@ using System.Numerics;
 
 namespace falling_circles;
 
-public class innerColor {
-	public int r, g, b, a;
-
-	public innerColor(int R, int G, int B, int A) {
-		r = R;
-		g = G;
-		b = B;
-		a = A;
-	}
-
-	public void reduceAlpha(int attack) {
-		int aHolder = a;
-		int remain = aHolder - attack;
-		if (((attack - a) < 0) == true )
-			a -= remain;
-		a -= attack;
-	}
-}
-
 public class Entity {
 	public int Radius { get; set;}
 	public int X { get; set;}
@@ -30,10 +11,13 @@ public class Entity {
 	public bool Active { get; set; }
 	public Color InitColor { get; set;}
 	public Color CurColor { get; set;}
+	
+	public int r { get; set; }
+	public int b { get; set; }
+	public int g { get; set; }
+	public int a { get; set; }
 
 	public Vector2 Position { get; set; }
-	public innerColor innColor { get; set; }
-
 
 	public Entity() {}
 	public Entity(int con_x,int con_y, int rad, int spd, bool act, Color init, Color cur) {
@@ -45,7 +29,11 @@ public class Entity {
 		InitColor = init;
 		CurColor = cur;
 		Position = new Vector2(X,Y);
-		innColor = new innerColor(CurColor.R, CurColor.G, CurColor.B, CurColor.A);
+		r = CurColor.R;
+		b = CurColor.B;
+		g = CurColor.G;
+		a = CurColor.A;
+
 		}
 
 	public virtual void updatePosition() {
@@ -53,7 +41,8 @@ public class Entity {
 	}
 
 	public virtual void draw() {
-		Raylib.DrawCircle((int)this.X, (int)this.Y, this.Radius, new Color(innColor.r, innColor.g, innColor.b, innColor.a));
+		Raylib.DrawCircle((int)this.X, (int)this.Y, this.Radius, new Color(r, b, g, a));
+		Raylib.DrawText($"{a}", this.X, this.Y - 24, 16, Color.Black);
 	}
 
 	public void fall() {
@@ -61,9 +50,12 @@ public class Entity {
 	}
 
 	public void track_point(Player play) {
-		if(this.innColor.a <= 0) {
-			this.Active = false;
+		if(this.a <= 0) {
+			this.Speed = 0;
+			this.X = 0 - Radius;
+			this.Y = 0 + Radius;
 			play.score += 1;
+			this.Active = false;
 		}
 	}
 };
@@ -72,8 +64,9 @@ public class Player : Entity {
 	public int SpecialCounter { get; set; }
 	public int Health { get; set; }
 	public int score { get; set; }
+	public int attackDmg { get; set; }
 
-	public Player(Entity ent, int special, int heal) {
+	public Player(Entity ent, int special, int heal, int attDmg) {
 		this.X = ent.X;
 		this.Y = ent.Y;
 		this.Radius = ent.Radius;
@@ -82,9 +75,13 @@ public class Player : Entity {
 		this.InitColor = ent.InitColor;
 		this.CurColor = ent.CurColor;
 		this.Position = new Vector2(X,Y);
-		this.innColor = ent.innColor;
+		this.r = ent.r;
+		this.b = ent.b;
+		this.g = ent.g;
+		this.a = ent.a;
 		SpecialCounter = special;
 		Health = heal;
+		attackDmg = attDmg;
 	}
 
 	public void attack(Entity[] ent) {
@@ -94,11 +91,21 @@ public class Player : Entity {
 				if (ent[i].Active == true)
 					if(Raylib.IsMouseButtonPressed(MouseButton.Left)) {
 						// this.score++;
-						ent[i].innColor.reduceAlpha(50);
+						if(ent[i].a - attackDmg < 0) {
+							int bufferDmg = ent[i].a - attackDmg;
+							bufferDmg *= -1;
+							ent[i].a += bufferDmg;
+							ent[i].a -= attackDmg;
+							ent[i].Speed = 0;
+							ent[i].X = 0 - Radius;
+							ent[i].Y = 0 + Radius;
+							this.score += 1;
+							ent[i].Active = false;
+						} else {
+							ent[i].a -= attackDmg;
+						}
 					}
-			} else {
-				// ent[i].CurColor = ent[i].InitColor;
-			}
+				}
 		}
 
 		if(Raylib.IsMouseButtonPressed(MouseButton.Right)) {
@@ -115,7 +122,7 @@ public class Player : Entity {
 	}
 
 	public override void draw() {
-		Raylib.DrawCircle((int)this.X, (int)this.Y, this.Radius, new Color(innColor.r, innColor.g, innColor.b, innColor.a));
+		Raylib.DrawCircle((int)this.X, (int)this.Y, this.Radius, new Color(r, b, g, a));
 	}
 	
 }
