@@ -155,7 +155,7 @@ public class ScreenManager {
 				if(Raylib.IsMouseButtonDown(MouseButton.Left)) {
 					var rand = new Random();
 					for(int i = 0; i < entity.Length; i++) {
-						entity[i] = new Entity(rand.Next(0, 480), 0, 32, rand.Next(1, 5), false, Color.Green, Color.Red); 
+						entity[i] = new Entity(rand.Next(0, 640), 0, 32, rand.Next(1, 5), false, Color.Green, Color.Red); 
 					}
 					this.framesDividend = 60;
 					this.framesDividend = 15;
@@ -170,7 +170,7 @@ public class ScreenManager {
 						this.Screen = GameScreen.Game;
 						var rand = new Random();
 						for(int i = 0; i < entity.Length; i++) {
-							entity[i] = new Entity(rand.Next(0, 480), 0, 32, rand.Next(1, 3), false, Color.Green, Color.Red); 
+							entity[i] = new Entity(rand.Next(0, 640), 0, 32, rand.Next(1, 3), false, Color.Green, Color.Red); 
 						}
 }				}
 

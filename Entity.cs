@@ -3,8 +3,19 @@ using System.Numerics;
 
 namespace falling_circles;
 
-struct innerColor {
-	int r, g, b, a;
+public class innerColor {
+	public int r, g, b, a;
+
+	public innerColor(int R, int G, int B, int A) {
+		r = R;
+		g = G;
+		b = B;
+		a = A;
+	}
+
+	public void reduceAlpha(int attack) {
+		a -= attack;
+	}
 }
 
 public class Entity {
@@ -17,7 +28,7 @@ public class Entity {
 	public Color CurColor { get; set;}
 
 	public Vector2 Position { get; set; }
-	private innerColor innColor { get; set; }
+	public innerColor innColor { get; set; }
 
 
 	public Entity() {}
@@ -30,14 +41,15 @@ public class Entity {
 		InitColor = init;
 		CurColor = cur;
 		Position = new Vector2(X,Y);
-	}
+		innColor = new innerColor(CurColor.R, CurColor.G, CurColor.B, CurColor.A);
+		}
 
 	public virtual void updatePosition() {
 		this.Position = new Vector2(this.X, this.Y);
 	}
 
 	public virtual void draw() {
-		Raylib.DrawCircle((int)this.X, (int)this.Y, this.Radius, this.CurColor);
+		Raylib.DrawCircle((int)this.X, (int)this.Y, this.Radius, new Color(innColor.r, innColor.g, innColor.b, innColor.a));
 	}
 
 	public void fall() {
@@ -45,7 +57,7 @@ public class Entity {
 	}
 
 	public void track_point(Player play) {
-		if(this.CurColor.A <= 0) {
+		if(this.innColor.a <= 0) {
 			this.Active = false;
 			play.score += 1;
 		}
@@ -66,6 +78,7 @@ public class Player : Entity {
 		this.InitColor = ent.InitColor;
 		this.CurColor = ent.CurColor;
 		this.Position = new Vector2(X,Y);
+		this.innColor = ent.innColor;
 		SpecialCounter = special;
 		Health = heal;
 	}
@@ -76,11 +89,11 @@ public class Player : Entity {
 				ent[i].CurColor = Color.Blue;
 				if (ent[i].Active == true)
 					if(Raylib.IsMouseButtonPressed(MouseButton.Left)) {
-						this.score++;
-						ent[i].Active = false;
+						// this.score++;
+						ent[i].innColor.reduceAlpha(50);
 					}
 			} else {
-				ent[i].CurColor = ent[i].InitColor;
+				// ent[i].CurColor = ent[i].InitColor;
 			}
 		}
 
@@ -98,7 +111,7 @@ public class Player : Entity {
 	}
 
 	public override void draw() {
-		Raylib.DrawCircle((int)this.X, (int)this.Y, this.Radius, this.CurColor);
+		Raylib.DrawCircle((int)this.X, (int)this.Y, this.Radius, new Color(innColor.r, innColor.g, innColor.b, innColor.a));
 	}
 	
 }
