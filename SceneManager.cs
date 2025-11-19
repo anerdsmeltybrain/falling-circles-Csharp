@@ -214,6 +214,7 @@ public class ScreenManager {
 					if(entity[i].Active == true)
 						entity[i].fall();
 						entity[i].updatePosition();
+						entity[i].track_point(player);
 				}
 
 			break;
@@ -252,8 +253,9 @@ public class ScreenManager {
 				player.draw();
 			break;
 			case GameScreen.Game:
+				string playerScore = player.score.ToString();
 				Raylib.ClearBackground(Color.White);
-				Raylib.DrawText($"{player.score}", 0, 0, 32, Color.Black);
+				Raylib.DrawText(playerScore.PadLeft(10, '0'), 0, 0, 32, Color.Black);
 				Raylib.DrawText($"{player.SpecialCounter}", 0, 32, 32, Color.Black);
 
 				switch(player.SpecialCounter) {

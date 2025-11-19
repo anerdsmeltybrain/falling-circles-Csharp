@@ -35,7 +35,7 @@ internal static class Program {
 		}
 
 		Entity player_ent = new Entity(0, 0, 32, 1, true, Color.Blue, Color.Green);
-		Player player = new Player(player_ent, 3, 3);
+		Player player = new Player(player_ent, 3, 3, 50);
 
 		GameScreen mainScreen = GameScreen.Title;
 
