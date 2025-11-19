@@ -114,6 +114,7 @@ public class ScreenManager {
 	Logo[] logoArray { get; set; }
 	Button[] mainMenuButtons { get; set; }
 	Color[] colors { get; set; }
+	int color_counter { get; set; }
 
 	public ScreenManager(GameScreen scree,
 	int eCounter, int fCounter,
@@ -135,6 +136,27 @@ public class ScreenManager {
 		logoArray[0] = main;
 	}
 
+	public void levelSpeed() {
+		switch (player.score) {
+			case 0:
+					this.framesDividend = 120;
+					this.framesDividend = 60;
+					break;
+			case 50:
+					this.framesDividend = 60;
+					this.framesDividend = 30;
+					break;
+			case 100:
+					this.framesDividend = 30;
+					this.framesDividend = 15;
+					break;
+			case 200:
+					this.framesDividend = 14;
+					this.framesDividend = 7;
+					break;
+		}
+	}
+
 	public void updateScreen() {
 		switch(this.Screen) {
 			case GameScreen.Title:
@@ -151,6 +173,10 @@ public class ScreenManager {
 					if(entity[i].Active == true)
 						entity[i].fall();
 						entity[i].updatePosition();
+						if(entity[i].Y > (480 / 2)) {
+							if(entity[i].a > 0)
+								entity[i].a-=5;
+						}
 				}
 
 				logoArray[0].floaty();
@@ -191,9 +217,26 @@ public class ScreenManager {
 				}
 
 				for(int i = 0; i < entity.Length; i++) {
+						if(Raylib.IsMouseButtonPressed(MouseButton.Left)) {
+							entity[i].r = colors[color_counter].R;
+							entity[i].b = colors[color_counter].B;
+							entity[i].g = colors[color_counter].G;
+							entity[i].a = colors[color_counter].A;
+							color_counter++;
+							if(color_counter >= colors.Length)
+								color_counter = 0;
+							}
+						}
+
+				for(int i = 0; i < entity.Length; i++) {
 					if(entity[i].Active == true)
 						entity[i].fall();
 						entity[i].updatePosition();
+						if(entity[i].Y > (480 / 3)) {
+							if(entity[i].a > 0)
+								entity[i].a-=5;
+						}
+
 				}
 
 
@@ -201,6 +244,8 @@ public class ScreenManager {
 			case GameScreen.Game:
 				player.updatePosition();
 				player.attack(entity);
+				player.monitorStreak();
+				levelSpeed();
 
 				framesCounter++;
 
@@ -215,6 +260,7 @@ public class ScreenManager {
 						entity[i].fall();
 						entity[i].updatePosition();
 						entity[i].track_point(player);
+						entity[i].lost_health(player);
 				}
 
 			break;
@@ -240,7 +286,7 @@ public class ScreenManager {
 				logoArray[0].draw();
 			break;
 			case GameScreen.Main:
-				Raylib.ClearBackground(Color.Purple);
+				Raylib.ClearBackground(Color.Black);
 
 				for(int i = 0; i < entity.Length; i++) {
 					if(entity[i].Active == true)
@@ -256,7 +302,21 @@ public class ScreenManager {
 				string playerScore = player.score.ToString();
 				Raylib.ClearBackground(Color.White);
 				Raylib.DrawText(playerScore.PadLeft(10, '0'), 0, 0, 32, Color.Black);
-				Raylib.DrawText($"{player.SpecialCounter}", 0, 32, 32, Color.Black);
+				// Raylib.DrawText($"{player.SpecialCounter}", 0, 32, 32, Color.Black);
+
+				if(player.score >= 200) {
+					Raylib.DrawText("You Win!", 640 / 2, 480 / 2, 32, Color.Black);
+					for(int i = 0; i < entity.Length; i++) {
+						entity[i].Speed = 0;
+					}
+				}
+
+				if(player.Health <= 0) {
+					Raylib.DrawText("You Lose!", 640 / 2, 480 / 2, 32, Color.Black);
+					for(int i = 0; i < entity.Length; i++) {
+						entity[i].Speed = 0;
+					}
+				}
 
 				switch(player.SpecialCounter) {
 					case 0:
@@ -272,6 +332,23 @@ public class ScreenManager {
 					logoArray[1].draw();
 					logoArray[2].draw();
 					logoArray[3].draw();
+					break;
+				}
+				
+				switch(player.Health) {
+					case 0:
+					break;
+					case 1:
+					logoArray[4].draw();
+					break;
+					case 2:
+					logoArray[4].draw();
+					logoArray[5].draw();
+					break;
+					case 3:
+					logoArray[4].draw();
+					logoArray[5].draw();
+					logoArray[6].draw();
 					break;
 				}
 

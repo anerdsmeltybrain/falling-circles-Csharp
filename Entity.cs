@@ -6,7 +6,7 @@ namespace falling_circles;
 public enum particleType {
 	Circle = 1,
 	Box = 4,
-	Scatter = 8,
+	Scatter = 3,
 }
 
 public class Entity {
@@ -91,9 +91,19 @@ public class Entity {
 	public void fall() {
 		this.Y += Speed;
 	}
+	public void fall_right() {
+		this.X += Speed;
+	}
+	public void fall_left() {
+		this.X -= Speed;
+	}
 
 	public void track_point(Player play) {
 		if(this.a <= 0) {
+			if (X > 0)
+				X-=5;
+			if (Y > 0)
+				Y-=5;
 			partActive = true;
 			newAlpha -= 5 ;
 			if (newAlpha % 25 == 0) {
@@ -112,16 +122,31 @@ public class Entity {
 			a++;
 		 }
 	}
+
+	public void lost_health(Player play) {
+		if (Y > 480) {
+			Y -= Radius * 2;
+			Speed = 0;
+			this.a = 0;
+			play.Health--;
+			play.killStreak = 0;
+		}
+	}
 };
 
 public class Player : Entity {
 	public int SpecialCounter { get; set; }
+	public bool specActive { get; set; }
+	public int specActiveCounter { get; set; }
 	public int Health { get; set; }
 	public int score { get; set; }
-	public int attackDmg { get; set; }
+	public int[] attackDmg { get; set; }
 	public Entity[] lastEntity { get; set; }
-
-	public Player(Entity ent, int special, int heal, int attDmg) {
+	public int killStreak {get; set;}
+	public int healthStreak {get; set;}
+	public int attackMultiplierIndex { get; set; }
+	
+	public Player(Entity ent, int special, int heal) {
 		this.X = ent.X;
 		this.Y = ent.Y;
 		this.Radius = ent.Radius;
@@ -135,8 +160,12 @@ public class Player : Entity {
 		this.g = ent.g;
 		this.a = ent.a;
 		SpecialCounter = special;
+		specActive = false;
+		specActiveCounter = 0;
 		Health = heal;
-		attackDmg = attDmg;
+		attackDmg = new int[] {
+			55, 155, 256
+		};
 		lastEntity = new Entity[1];
 		lastEntity[0] = new Entity(X, Y, Radius, 0, false, Color.Purple, Color.DarkPurple);
 	}
@@ -144,23 +173,34 @@ public class Player : Entity {
 	public void attack(Entity[] ent) {
 		for(int i = 0; i < ent.Length; i++) {
 			if(Raylib.CheckCollisionCircles(this.Position, this.Radius, ent[i].Position, ent[i].Radius)  ) {
+				if( specActive == true && Raylib.CheckCollisionCircles(this.Position, this.Radius, ent[i].Position, ent[i].Radius) && ent[i].a != 0) {
+					specActiveCounter++;
+					ent[i].a = 0;
+					score++;
+					killStreak++;
+					if (specActiveCounter == 10)  {
+						specActive = false;
+						specActiveCounter = 0;
+					}
+				}
 				lastEntity[0] = ent[i];
 				ent[i].CurColor = Color.Blue;
 				if (ent[i].Active == true && ent[i].partActive == false)
 					if(Raylib.IsMouseButtonPressed(MouseButton.Left)) {
 						// this.score++;
-						if(ent[i].a - attackDmg < 0) {
-							int bufferDmg = ent[i].a - attackDmg;
+						if(ent[i].a - attackDmg[attackMultiplierIndex] < 0) {
+							int bufferDmg = ent[i].a - attackDmg[attackMultiplierIndex];
 							bufferDmg *= -1;
 							ent[i].a += bufferDmg;
-							ent[i].a -= attackDmg;
+							ent[i].a -= attackDmg[attackMultiplierIndex];
 							ent[i].Speed = 0;
 							// ent[i].X = 0 - Radius;
 							// ent[i].Y = 0 + Radius;
 							this.score += 1;
+							killStreak++;
 							// ent[i].Active = false;
 						} else {
-							ent[i].a -= attackDmg;
+							ent[i].a -= attackDmg[attackMultiplierIndex];
 						}
 					}
 				}
@@ -168,6 +208,7 @@ public class Player : Entity {
 
 		if(Raylib.IsMouseButtonPressed(MouseButton.Right)) {
 			this.SpecialCounter--;
+			specActive = true;
 			if(this.SpecialCounter < 0)
 				this.SpecialCounter = 0;
 		}
@@ -181,6 +222,24 @@ public class Player : Entity {
 
 	public override void draw() {
 		Raylib.DrawCircle((int)this.X, (int)this.Y, this.Radius, new Color(r, b, g, a));
+		Raylib.DrawText($"{specActiveCounter}", X, Y - Radius, 16, Color.Black);
+	}
+
+	public void monitorStreak() {
+		if(killStreak >= 20 && SpecialCounter <= 3) {
+			killStreak = 0;
+			if (SpecialCounter != 3) {
+				SpecialCounter++;
+			}
+			if (attackMultiplierIndex != 2  ) {
+				attackMultiplierIndex++;
+			} 			
+		}
+
+		if(healthStreak >= 50 && Health <= 3) {
+			Health++;
+			healthStreak = 0;
+		}
 	}
 	
 }

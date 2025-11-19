@@ -27,15 +27,15 @@ internal static class Program {
 		var rand = new Random();
 		int enemyCounter = 0;
 		int framesCounter = 0;
-		int framesDividend = 60;
-		int framesDivisor = 15;
+		int framesDividend = 14;
+		int framesDivisor = 7;
 
 		for(int i = 0; i < entity.Length; i++) {
-			entity[i] = new Entity(rand.Next(0, 480), 0, 32, 1, false, Color.Green, colors[rand.Next(0, colors.Length)]); 
+			entity[i] = new Entity(rand.Next(0, 640), 0, 32, 1, false, Color.Green, colors[rand.Next(0, colors.Length)]); 
 		}
 
 		Entity player_ent = new Entity(0, 0, 32, 1, true, Color.Blue, Color.Green);
-		Player player = new Player(player_ent, 3, 3, 50);
+		Player player = new Player(player_ent, 3, 3);
 
 		GameScreen mainScreen = GameScreen.Title;
 
@@ -43,13 +43,20 @@ internal static class Program {
 		Logo specialIcon0 = new Logo("./spMoveIcon.png", 32, 32, 8, 1);
 		Logo specialIcon1 = new Logo("./spMoveIcon.png", 64, 32, 8, 1);
 		Logo specialIcon2 = new Logo("./spMoveIcon.png", 96, 32, 8, 1);
+		Logo healthIcon0 = new Logo("./healthIcon.png", 32, 64, 8, 1);
+		Logo healthIcon1 = new Logo("./healthIcon.png", 64, 64, 8, 1);
+		Logo healthIcon2 = new Logo("./healthIcon.png", 96, 64, 8, 1);
 
-		Logo[] logoArray = new Logo[4];
+
+		Logo[] logoArray = new Logo[7];
 
 		logoArray[0] = mainMenuLogo;
 		logoArray[1] = specialIcon0;
 		logoArray[2] = specialIcon1;
 		logoArray[3] = specialIcon2;
+		logoArray[4] = healthIcon0;
+		logoArray[5] = healthIcon1;
+		logoArray[6] = healthIcon2;
 
 
 		Rectangle gameButtonRec = new Rectangle(128, 128, 128, 64);
