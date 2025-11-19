@@ -70,7 +70,7 @@ public class Entity {
 	public virtual void draw() {
 		if(this.Active == true) {
 			Raylib.DrawCircle((int)this.X, (int)this.Y, this.Radius, new Color(r, b, g, a));
-			Raylib.DrawText($"{a}", this.X, this.Y - 32, 16, Color.Black);
+			// Raylib.DrawText($"{a}", this.X, this.Y - 32, 16, Color.Black);
 		}
 
 		if(partActive == true) {

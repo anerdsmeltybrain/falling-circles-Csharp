@@ -27,8 +27,8 @@ internal static class Program {
 		var rand = new Random();
 		int enemyCounter = 0;
 		int framesCounter = 0;
-		int framesDividend = 14;
-		int framesDivisor = 7;
+		int framesDividend = 6;
+		int framesDivisor = 3;
 
 		for(int i = 0; i < entity.Length; i++) {
 			entity[i] = new Entity(rand.Next(0, 640), 0, 32, 1, false, Color.Green, colors[rand.Next(0, colors.Length)]); 

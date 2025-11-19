@@ -139,20 +139,24 @@ public class ScreenManager {
 	public void levelSpeed() {
 		switch (player.score) {
 			case 0:
-					this.framesDividend = 120;
+					this.framesDivisor = 30;
 					this.framesDividend = 60;
 					break;
 			case 50:
-					this.framesDividend = 60;
+					this.framesDivisor = 15;
 					this.framesDividend = 30;
 					break;
 			case 100:
-					this.framesDividend = 30;
-					this.framesDividend = 15;
+					this.framesDivisor = 10;
+					this.framesDividend = 20;
+					break;
+			case 150:
+					this.framesDivisor = 7;
+					this.framesDividend = 14;
 					break;
 			case 200:
-					this.framesDividend = 14;
-					this.framesDividend = 7;
+					this.framesDivisor = 60;
+					this.framesDividend = 360;
 					break;
 		}
 	}
@@ -281,7 +285,7 @@ public class ScreenManager {
 				}
 
 				// Raylib.DrawTexture(logo, 128, 128, Color.White);
-				Raylib.DrawText("Press Any Key to Continue", 640 / 2, 480 / 2, 16, Color.Black);
+				Raylib.DrawText("Press Any Key to Continue", 640 / 4, 480 / 2, 32, Color.Black);
 				player.draw();
 				logoArray[0].draw();
 			break;
@@ -313,6 +317,8 @@ public class ScreenManager {
 
 				if(player.Health <= 0) {
 					Raylib.DrawText("You Lose!", 640 / 2, 480 / 2, 32, Color.Black);
+					this.framesDivisor = 0;
+					this.framesDividend = 0;
 					for(int i = 0; i < entity.Length; i++) {
 						entity[i].Speed = 0;
 					}
